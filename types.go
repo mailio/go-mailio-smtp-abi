@@ -15,6 +15,14 @@ type VerdictStatus struct {
 	Status string `json:"status" validate:"required,oneof=PASS FAIL NOT_AVAILABLE"` // possible values: PASS, FAIL, NOT_AVAILABLE
 }
 
+type ForwardInfo struct {
+	IsForwarded       bool            `json:"isForwarded"`                 // Whether the email was forwarded.
+	OriginalRecipient *mail.Address   `json:"originalRecipient,omitempty"` // The mailbox that originally received the message before it was forwarded
+	ForwardedTo       []*mail.Address `json:"forwardedTo,omitempty"`       // The address it was forwarded *to*
+	ForwardedFor      []*mail.Address `json:"forwardedFor,omitempty"`      // Full chain from X-Forwarded-For, if present.
+	Via               string          `json:"via,omitempty"`               // What did the forwarder look like ("gmail", etc) – optional hint.
+}
+
 type Mail struct {
 	From                 mail.Address        `json:"from"`              // The email address of the original sender.
 	ReplyTo              []*mail.Address     `json:"replyTo,omitempty"` // The email address to which bounces (undeliverable notifications) are to be forwarded.
@@ -39,6 +47,7 @@ type Mail struct {
 	SpfVerdict           *VerdictStatus      `json:"spfVerdict,omitempty"`   // optinal, spf verdict
 	DkimVerdict          *VerdictStatus      `json:"dkimVerdict,omitempty"`  // optional, dkim verdict
 	DmarcVerdict         *VerdictStatus      `json:"dmarcVerdict"`           // optional, dmarc verdict
+	ForwardInfo          *ForwardInfo        `json:"forwardInfo,omitempty"`  // optional, forward info
 }
 
 type MailBodyRaw struct {
